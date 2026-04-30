@@ -15,6 +15,7 @@ const Success = () => {
       <div className="linkify mt-3 text-gray-500 dark:text-gray-200">
         Visit{" "}
         <Link
+          rel="noreferrer noopener"
           target="_blank"
           to={`https://app.ens.domains/${chosenUsername}.hey.xyz`}
         >

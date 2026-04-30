@@ -218,7 +218,13 @@ const Transfer = ({ token }: TransferProps) => {
         ) : Number(tokenBalance) < amount ? (
           <Button
             className="w-full"
-            onClick={() => window.open("https://lens.xyz/bridge", "_blank")}
+            onClick={() =>
+              window.open(
+                "https://lens.xyz/bridge",
+                "_blank",
+                "noopener,noreferrer"
+              )
+            }
           >
             <span>Bridge to Lens</span>
             <ArrowUpRightIcon className="size-4" />

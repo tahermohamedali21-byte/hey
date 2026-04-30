@@ -28,6 +28,7 @@ const ENSBadge = ({
     <Tooltip content={`${account.heyEns.localName}.hey.xyz`} placement="right">
       {linkToDashboard ? (
         <Link
+          rel="noreferrer noopener"
           target="_blank"
           to={`https://app.ens.domains/${account.heyEns.localName}.hey.xyz`}
         >

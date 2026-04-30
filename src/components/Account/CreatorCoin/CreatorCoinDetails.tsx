@@ -97,7 +97,8 @@ const CreatorCoinDetails = ({ address }: CreatorCoinDetailsProps) => {
           onClick={() =>
             window.open(
               `https://basescan.org/address/${coin.address}`,
-              "_blank"
+              "_blank",
+              "noopener,noreferrer"
             )
           }
           outline
