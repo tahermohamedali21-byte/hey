@@ -132,20 +132,24 @@ const Choose = () => {
   const handleCreate = async ({
     username
   }: z.infer<typeof ValidationSchema>) => {
-    setIsSubmitting(true);
-    await handleWrongNetwork();
+    try {
+      setIsSubmitting(true);
+      await handleWrongNetwork();
 
-    return await createUsername({
-      variables: {
-        request: {
-          autoAssign: true,
-          username: {
-            localName: username.toLowerCase(),
-            namespace: HEY_ENS_NAMESPACE
+      return await createUsername({
+        variables: {
+          request: {
+            autoAssign: true,
+            username: {
+              localName: username.toLowerCase(),
+              namespace: HEY_ENS_NAMESPACE
+            }
           }
         }
-      }
-    });
+      });
+    } catch (error) {
+      onError(error);
+    }
   };
 
   if (!currentAccount) {

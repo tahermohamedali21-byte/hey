@@ -33,7 +33,9 @@ const useTransactionLifecycle = () => {
       return;
     }
     await handleWrongNetwork();
-    if (!data) return;
+    if (!data) {
+      throw new Error("Wallet client is unavailable.");
+    }
     return onCompleted(
       await sendEip712Transaction(data, {
         account: data.account,
@@ -54,7 +56,9 @@ const useTransactionLifecycle = () => {
       return;
     }
     await handleWrongNetwork();
-    if (!data) return;
+    if (!data) {
+      throw new Error("Wallet client is unavailable.");
+    }
     return onCompleted(
       await sendTransaction(data, {
         account: data.account,

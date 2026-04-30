@@ -1,6 +1,5 @@
 import { useConnections, useSwitchChain } from "wagmi";
 import { CHAIN } from "@/data/constants";
-import logger from "@/helpers//logger";
 
 interface HandleWrongNetworkParams {
   chainId?: number;
@@ -17,16 +16,11 @@ const useHandleWrongNetwork = () => {
     const isWrongNetwork = () => activeConnection[0]?.chainId !== chainId;
 
     if (!isConnected()) {
-      logger.warn("No active connection found.");
-      return;
+      throw new Error("No active wallet connection found.");
     }
 
     if (isWrongNetwork()) {
-      try {
-        await switchChainAsync({ chainId });
-      } catch (error) {
-        logger.error("Failed to switch chains:", error);
-      }
+      await switchChainAsync({ chainId });
     }
   };
 
