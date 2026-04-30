@@ -30,6 +30,28 @@ interface TradeModalProps {
 
 type Mode = "buy" | "sell";
 
+const normalizeTradeAmount = (
+  amount: string,
+  decimals: number
+): string | null => {
+  const value = amount.trim();
+  const normalized = value.startsWith(".") ? `0${value}` : value;
+
+  if (!/^\d+(\.\d+)?$/.test(normalized)) {
+    return null;
+  }
+
+  const [whole, fraction = ""] = normalized.split(".");
+  if (fraction.length > decimals) {
+    return null;
+  }
+
+  const hasWholeAmount = /[1-9]/.test(whole);
+  const hasFractionAmount = /[1-9]/.test(fraction);
+
+  return hasWholeAmount || hasFractionAmount ? normalized : null;
+};
+
 const Trade = ({ coin, onClose }: TradeModalProps) => {
   const { address } = useAccount();
   const config = useConfig();
@@ -71,6 +93,7 @@ const Trade = ({ coin, onClose }: TradeModalProps) => {
   }, [address, coin.address, publicClient]);
 
   const tokenDecimals = 18;
+  const tradeAmount = normalizeTradeAmount(amount, tokenDecimals);
 
   const setPercentAmount = (pct: number) => {
     const decimals = 6;
@@ -88,11 +111,11 @@ const Trade = ({ coin, onClose }: TradeModalProps) => {
   };
 
   const makeParams = (address: Address): TradeParameters | null => {
-    if (!amount || Number(amount) <= 0) return null;
+    if (!tradeAmount) return null;
 
     if (mode === "buy") {
       return {
-        amountIn: parseEther(amount),
+        amountIn: parseEther(tradeAmount),
         buy: { address: coin.address as Address, type: "erc20" },
         sell: { type: "eth" },
         sender: address,
@@ -101,7 +124,7 @@ const Trade = ({ coin, onClose }: TradeModalProps) => {
     }
 
     return {
-      amountIn: parseUnits(amount, tokenDecimals),
+      amountIn: parseUnits(tradeAmount, tokenDecimals),
       buy: { type: "eth" },
       sell: { address: coin.address as Address, type: "erc20" },
       sender: address,
@@ -115,7 +138,9 @@ const Trade = ({ coin, onClose }: TradeModalProps) => {
     }
 
     const params = makeParams(address);
-    if (!params) return;
+    if (!params) {
+      return toast.error("Enter a valid amount");
+    }
 
     try {
       setLoading(true);
@@ -151,7 +176,7 @@ const Trade = ({ coin, onClose }: TradeModalProps) => {
 
     const run = async () => {
       const sender = (address as Address) || undefined;
-      if (!sender || !amount) {
+      if (!sender || !tradeAmount) {
         setEstimatedOut("");
         return;
       }
@@ -159,14 +184,14 @@ const Trade = ({ coin, onClose }: TradeModalProps) => {
       const params: TradeParameters =
         mode === "buy"
           ? {
-              amountIn: parseEther(amount),
+              amountIn: parseEther(tradeAmount),
               buy: { address: coin.address as Address, type: "erc20" },
               sell: { type: "eth" },
               sender,
               slippage: 0.1
             }
           : {
-              amountIn: parseUnits(amount, tokenDecimals),
+              amountIn: parseUnits(tradeAmount, tokenDecimals),
               buy: { type: "eth" },
               sell: { address: coin.address as Address, type: "erc20" },
               sender,
@@ -197,7 +222,7 @@ const Trade = ({ coin, onClose }: TradeModalProps) => {
       if (intervalId) clearInterval(intervalId);
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [address, amount, coin.address, mode]);
+  }, [address, coin.address, mode, tradeAmount]);
 
   const symbol = coin.symbol || "";
 
@@ -267,7 +292,7 @@ const Trade = ({ coin, onClose }: TradeModalProps) => {
       </div>
       <Button
         className="mt-4 w-full"
-        disabled={!amount || !address}
+        disabled={!tradeAmount || !address}
         loading={loading}
         onClick={handleSubmit}
         size="lg"
