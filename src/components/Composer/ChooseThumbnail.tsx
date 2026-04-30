@@ -1,6 +1,6 @@
 import { CheckCircleIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import type { ChangeEvent } from "react";
-import { memo, useEffect, useId, useState } from "react";
+import { memo, useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import ThumbnailsShimmer from "@/components/Shared/Shimmer/ThumbnailsShimmer";
 import { Spinner } from "@/components/Shared/UI";
@@ -18,14 +18,37 @@ interface Thumbnail {
   decentralizedUrl: string;
 }
 
+const revokeThumbnailBlobUrls = (
+  thumbnails: Thumbnail[],
+  retainedBlobUrls = new Set<string>()
+) => {
+  for (const { blobUrl } of thumbnails) {
+    if (blobUrl.startsWith("blob:") && !retainedBlobUrls.has(blobUrl)) {
+      URL.revokeObjectURL(blobUrl);
+    }
+  }
+};
+
 const ChooseThumbnail = () => {
   const inputId = useId();
+  const thumbnailsRef = useRef<Thumbnail[]>([]);
   const [thumbnails, setThumbnails] = useState<Thumbnail[]>([]);
   const [imageUploading, setImageUploading] = useState(false);
   const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState(-1);
   const { attachments } = usePostAttachmentStore();
   const { setVideoThumbnail, videoThumbnail } = usePostVideoStore();
   const { file } = attachments[0];
+
+  const setThumbnailList = (thumbnailList: Thumbnail[]) => {
+    const retainedBlobUrls = new Set(
+      thumbnailList
+        .map(({ blobUrl }) => blobUrl)
+        .filter((blobUrl) => blobUrl.startsWith("blob:"))
+    );
+    revokeThumbnailBlobUrls(thumbnailsRef.current, retainedBlobUrls);
+    thumbnailsRef.current = thumbnailList;
+    setThumbnails(thumbnailList);
+  };
 
   const uploadThumbnailToStorageNode = async (fileToUpload: File) => {
     setVideoThumbnail({ ...videoThumbnail, uploading: true });
@@ -64,6 +87,11 @@ const ChooseThumbnail = () => {
                 : thumbnail
             )
           );
+          thumbnailsRef.current = thumbnailsRef.current.map((thumbnail, i) =>
+            i === index
+              ? { ...thumbnail, decentralizedUrl: result.uri }
+              : thumbnail
+          );
         }
       );
     } else {
@@ -85,7 +113,7 @@ const ChooseThumbnail = () => {
       for (const thumbnailBlob of thumbnailArray) {
         thumbnailList.push({ blobUrl: thumbnailBlob, decentralizedUrl: "" });
       }
-      setThumbnails(thumbnailList);
+      setThumbnailList(thumbnailList);
       handleSelectThumbnail(DEFAULT_THUMBNAIL_INDEX, thumbnailList);
     } catch {}
   };
@@ -96,6 +124,8 @@ const ChooseThumbnail = () => {
     }
     return () => {
       setSelectedThumbnailIndex(-1);
+      revokeThumbnailBlobUrls(thumbnailsRef.current);
+      thumbnailsRef.current = [];
       setThumbnails([]);
     };
   }, [file]);
@@ -107,12 +137,12 @@ const ChooseThumbnail = () => {
         setSelectedThumbnailIndex(-1);
         const file = event.target.files[0];
         const result = await uploadThumbnailToStorageNode(file);
-        const preview = window.URL?.createObjectURL(file);
+        const preview = URL.createObjectURL(file);
         const thumbnailList = [
           { blobUrl: preview, decentralizedUrl: result.uri },
           ...thumbnails
         ];
-        setThumbnails(thumbnailList);
+        setThumbnailList(thumbnailList);
         handleSelectThumbnail(0, thumbnailList);
       } catch {
         toast.error("Failed to upload thumbnail");
