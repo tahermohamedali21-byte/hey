@@ -108,11 +108,11 @@ const Transfer = ({ token }: TransferProps) => {
 
   const onOtherAmount = (event: ChangeEvent<HTMLInputElement>) => {
     const value = Number(event.target.value);
-    setAmount(value);
+    setAmount(Number.isFinite(value) ? Math.max(value, 0) : 0);
   };
 
   const handleSetAmount = (amount: number) => {
-    setAmount(Number(amount));
+    setAmount(Number.isFinite(amount) ? Math.max(amount, 0) : 0);
     setOther(false);
   };
 
@@ -130,6 +130,10 @@ const Transfer = ({ token }: TransferProps) => {
   };
 
   const handleDeposit = async () => {
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return toast.error("Enter a valid purchase amount");
+    }
+
     setIsSubmitting(true);
     umami.track("top_up", { amount, symbol });
     return await deposit({
@@ -222,7 +226,7 @@ const Transfer = ({ token }: TransferProps) => {
         ) : (
           <Button
             className="w-full"
-            disabled={isSubmitting || amount === 0}
+            disabled={isSubmitting || !Number.isFinite(amount) || amount <= 0}
             loading={isSubmitting}
             onClick={handleDeposit}
           >
