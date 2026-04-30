@@ -50,12 +50,10 @@ const useCreatePost = ({
         },
         id: toastId
       });
-      cache.modify({
-        fields: {
-          [isComment ? "postReferences" : "posts"]: () => {
-            cache.writeQuery({ data: data.post, query: PostDocument });
-          }
-        }
+      cache.writeQuery({
+        data: { post: data.post },
+        query: PostDocument,
+        variables: { request: { post: data.post.id } }
       });
     },
     [getPost, cache, navigate, isComment]
