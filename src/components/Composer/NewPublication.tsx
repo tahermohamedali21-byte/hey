@@ -272,7 +272,7 @@ const NewPublication = ({ className, post, feed }: NewPublicationProps) => {
             <>
               <CollectSettings />
               <RulesSettings />
-              {isComment ? null : !currentAccount?.isStaff && feed ? null : (
+              {isComment || feed ? null : (
                 <GroupFeedSelector
                   onChange={setSelectedFeed}
                   selected={selectedFeed}

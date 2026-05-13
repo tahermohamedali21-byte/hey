@@ -2,31 +2,37 @@ query NotificationIndicator($request: NotificationRequest!) {
   notifications(request: $request) {
     items {
       ... on CommentNotification {
-        id
+        ...CommentNotification
       }
       ... on FollowNotification {
-        id
+        ...FollowNotification
+      }
+      ... on GroupMembershipRequestApprovedNotification {
+        ...GroupMembershipRequestApprovedNotification
+      }
+      ... on GroupMembershipRequestRejectedNotification {
+        ...GroupMembershipRequestRejectedNotification
       }
       ... on MentionNotification {
-        id
+        ...MentionNotification
       }
       ... on QuoteNotification {
-        id
+        ...QuoteNotification
       }
       ... on ReactionNotification {
-        id
+        ...ReactionNotification
       }
       ... on RepostNotification {
-        id
+        ...RepostNotification
       }
       ... on PostActionExecutedNotification {
-        id
+        ...PostActionExecutedNotification
       }
       ... on AccountActionExecutedNotification {
-        id
+        ...AccountActionExecutedNotification
       }
       ... on TokenDistributedNotification {
-        id
+        ...TokenDistributedNotification
       }
     }
   }
