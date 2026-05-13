@@ -64,6 +64,16 @@ const Layout = () => {
       <GlobalModals />
       <GlobalAlerts />
       <ReloadTabsWatcher />
+      <div className="border-gray-800 border-b bg-black px-4 py-2 text-center font-medium text-sm text-white dark:border-gray-200 dark:bg-white dark:text-black">
+        hey.xyz is for sale along with all the assets, contact{" "}
+        <a
+          className="underline underline-offset-2"
+          href="mailto:yoginth@hey.com"
+        >
+          yoginth@hey.com
+        </a>{" "}
+        for details
+      </div>
       <div className="mx-auto flex w-full max-w-6xl items-start gap-x-8 px-0 md:px-5">
         <Navbar />
         <Outlet />
