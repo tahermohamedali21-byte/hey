@@ -1,6 +1,0 @@
-fragment TokenDistributedNotification on TokenDistributedNotification {
-  id
-  amount {
-    ...PayableAmount
-  }
-}

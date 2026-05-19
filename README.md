@@ -4,9 +4,9 @@
 
 To start working with the Hey monorepo, ensure the following tools are installed:
 
-- [Node.js](https://nodejs.org/en/download/) (v18 or higher) – the JavaScript runtime used in this project.
-- [pnpm](https://pnpm.io/installation) – the package manager used throughout this repository.
-- [Postgres App](https://postgresapp.com/) – the Postgres database used in development.
+- [Node.js](https://nodejs.org/en/download/) (v22 or higher) - the JavaScript runtime used in this project.
+- [pnpm](https://pnpm.io/installation) - the package manager used throughout this repository.
+- [Postgres App](https://postgresapp.com/) - the Postgres database used in development.
 
 ## Installation
 
@@ -15,7 +15,7 @@ This repository uses [pnpm workspaces](https://pnpm.io/workspaces) to manage mul
 ### Clone the Repository
 
 ```bash
-git clone git@github.com:heyverse/hey.git
+git clone git@github.com:bigint/hey.git
 ```
 
 ### Install NVM and pnpm
@@ -58,8 +58,8 @@ The example environment files define the following variables:
 
 #### API (`apps/api/.env.example`)
 
-- `PRIVATE_KEY` – Private key used to sign Lens requests.
-- `SHARED_SECRET` – Token for internal API authorization.
+- `PRIVATE_KEY` - Private key used to sign Lens requests.
+- `SHARED_SECRET` - Token for internal API authorization.
 
 ### Start the Development Server
 
@@ -114,6 +114,6 @@ Convenient Node.js helpers are in the `script` directory:
 
 ## License
 
-This project is released under the **GNU AGPL-3.0** license. See the [LICENSE](./LICENSE) file for details.
+This project is released under the **GNU AGPL-3.0** license. See the [LICENSE](./LICENSE) file for details
 
 🌸

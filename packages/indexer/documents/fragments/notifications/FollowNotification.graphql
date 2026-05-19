@@ -1,8 +1,0 @@
-fragment FollowNotification on FollowNotification {
-  id
-  followers {
-    account {
-      ...Account
-    }
-  }
-}
